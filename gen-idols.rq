@@ -1,0 +1,17 @@
+PREFIX imas: <https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <http://schema.org/>
+
+SELECT concat("\n;; okuri-ari entries.\n;; okuri-nasi entries.\n\n",
+group_concat(concat(replace(?skana, " ", ""), " /", replace(?sname, " ", ""), ";[im@sparql] ", if(bound(?sbrand), concat(?sbrand, "の"), ""), ?sclass, if(bound(?scv), concat(" CV:", ?scv), ""), "/"); separator="\n"),
+"\n")
+WHERE {
+    ?s a imas:Idol;
+        rdfs:label ?sname;
+        imas:nameKana ?skana;
+        a/rdfs:label ?sclass.
+    optional {?s imas:Brand ?sbrand.}
+    optional {?s imas:cv ?scv. filter(isLiteral(?scv))}
+    bind("" as ?g)
+}
+group by ?g

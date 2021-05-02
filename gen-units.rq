@@ -1,0 +1,22 @@
+PREFIX imas: <https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <http://schema.org/>
+
+SELECT concat("\n;; okuri-ari entries.\n;; okuri-nasi entries.\n\n",
+group_concat(concat(replace(?skana2, " ", ""), " /", ?sname2, ";[im@sparql] ", ?sclass2, if(?smembers = "", "", concat(" (", ?smembers, ")")), "/"); separator="\n"),
+"\n")
+WHERE {
+  {
+    SELECT (str(sample(?sname)) as ?sname2) (str(sample(?skana)) as ?skana2) (str(sample(?sclass)) as ?sclass2) (group_concat(?smember; separator=", ") as ?smembers)
+    WHERE {
+        ?s a imas:Unit;
+            rdfs:label ?sname;
+            imas:nameKana ?skana;
+            a/rdfs:label ?sclass.
+        optional {?s schema:member/rdfs:label ?smember.}
+    }
+    group by ?s
+  }
+  bind("" as ?g)
+}
+group by ?g
